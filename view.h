@@ -3,6 +3,8 @@
 #include "misc.h"
 #include <string>
 
+namespace NDCPU {
+
 class TEmulator;
 
 class TDebugViewer {
@@ -14,4 +16,5 @@ class TDebugViewer {
 public:
     TDebugViewer(const TEmulator* emulator);
     void Dump() const;
+};
 };

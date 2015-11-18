@@ -1,5 +1,7 @@
 #include "emulator.h"
 
+using namespace NDCPU;
+
 TEmulator::TEmulator()
     : Memory(0x10000)
 {

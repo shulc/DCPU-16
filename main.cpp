@@ -10,16 +10,16 @@ int main(int, char*[]) {
         0x84d3, 0xbb81, 0x9461, 0x7c20, 0x0017, 0x7f81, 0x0019, 0x946f,
         0x6381, 0xeb81} };
 
-    TEmulator emulator(program);
-    TDebugViewer view(&emulator);
+    NDCPU::TEmulator emulator(program);
+    NDCPU::TDebugViewer view(&emulator);
 
+    // dump initial state
     view.Dump();
-    emulator.Step();
-    view.Dump();
-    emulator.Step();
-    view.Dump();
-    emulator.Step();
-    view.Dump();
+
+    for (size_t i = 0; i < 4; ++i) {
+        emulator.Step();
+        view.Dump();
+    }
 
     return 0;
 }

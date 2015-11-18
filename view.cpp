@@ -4,6 +4,8 @@
 #include <iostream>
 #include <iomanip>
 
+using namespace NDCPU;
+
 TDebugViewer::TDebugViewer(const TEmulator* emulator)
     : Emulator(emulator)
 {
@@ -31,8 +33,8 @@ void TDebugViewer::Dump() const {
     DumpRegister("IA", Emulator->IA);
     std::cout << std::endl;
 
-    for (auto i = 0; i < TEmulator::NUM_REGISTERS; ++i) {
-        DumpRegister(Emulator->RegisterNames[i], Emulator->Registers[i]);
+    for (auto i = 0; i < NUM_REGISTERS; ++i) {
+        DumpRegister(RegisterNames[i], Emulator->Registers[i]);
         if (i % 4 == 3)
             std::cout << std::endl;
     }
