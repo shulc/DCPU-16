@@ -50,7 +50,7 @@ ui16* TEmulator::GetValue(ui16 v, bool isA) {
         return &Memory[PC++];
     } else if (v >= 0x20 && v <= 0x3f) {
         if (isA) {
-            Literal[isA] = FromLiteral(v - 0x1e);
+            Literal[isA] = FromLiteral(v - 0x21);
             return &Literal[isA];
         }
     }

@@ -1,15 +1,25 @@
 #include "emulator.h"
+#include "disasembler.h"
 #include "view.h"
 
 #include <vector>
+#include <iostream>
 
 int main(int, char*[]) {
-    std::vector<ui16> program { {
+    std::vector<ui16> program {{
         0x7c01, 0x0030, 0x7fc1, 0x0020, 0x1000, 0x7803, 0x1000, 0xc413,
         0x7f81, 0x0019, 0xacc1, 0x7c01, 0x2000, 0x22c1, 0x2000, 0x88c3,
         0x84d3, 0xbb81, 0x9461, 0x7c20, 0x0017, 0x7f81, 0x0019, 0x946f,
-        0x6381, 0xeb81} };
+        0x6381, 0xeb81
+    }};
 
+    TDisasembler disasm;
+    for (std::vector<ui16>::const_iterator it = program.begin(), end = program.end(); it != end;) {
+        ui16 v = *it++;
+        std::cout << disasm.Op(v, it) << std::endl;
+    }
+
+#if 0
     NDCPU::TEmulator emulator(program);
     NDCPU::TDebugViewer view(&emulator);
 
@@ -20,6 +30,7 @@ int main(int, char*[]) {
         emulator.Step();
         view.Dump();
     }
+#endif
 
     return 0;
 }

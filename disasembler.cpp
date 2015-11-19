@@ -78,9 +78,9 @@ std::string TDisasembler::Value(ui16 v, iterator& it, bool isA) const {
     if (v <= 0x07) {
         return RegisterNames[v];
     } else if (v <= 0x0f) {
-        return Memory(RegisterNames[v]);
+        return Memory(RegisterNames[v - 0x08]);
     } else if (v <= 0x17) {
-        return Memory(RegisterNames[v] + " + " + Hex(*it++));
+        return Memory(RegisterNames[v - 0x10] + " + " + Hex(*it++));
     } else if (v == 0x18) {
         return isA ? "POP" : "PUSH";
     } else if (v == 0x19) {
@@ -95,11 +95,11 @@ std::string TDisasembler::Value(ui16 v, iterator& it, bool isA) const {
         return "EX";
     } else if (v == 0x1e) {
         return Memory(Hex(*it++));
-    } else if (v == 0xf) {
+    } else if (v == 0x1f) {
         return Hex(*it++);
     } else if (v <= 0x3f) {
         if (isA) {
-            return Literal(0xffff - v);
+            return Hex(v - 0x21);
         }
     }
     return "";
@@ -113,6 +113,6 @@ std::string TDisasembler::Op(ui16 instruction, iterator& it) const {
         return SpecOpNames.at(specOpcode) + " " +  a;
     }
     const std::string a = ValueA(instruction, it);
-    const std::string b = ValueA(instruction, it);
+    const std::string b = ValueB(instruction, it);
     return OpNames.at(opcode) + " " + b + ", " + a;
 }
