@@ -13,11 +13,9 @@ int main(int, char*[]) {
         0x6381, 0xeb81
     }};
 
-    TDisasembler disasm;
-    for (std::vector<ui16>::const_iterator it = program.begin(), end = program.end(); it != end;) {
-        ui16 v = *it++;
-        std::cout << disasm.Op(v, it) << std::endl;
-    }
+    TDisasembler disasm(program);
+    disasm.Process();
+    disasm.Save(&std::cout);
 
 #if 0
     NDCPU::TEmulator emulator(program);

@@ -4,7 +4,10 @@
 
 using namespace NDCPU;
 
-TDisasembler::TDisasembler() {
+TDisasembler::TDisasembler(const procVec& program)
+    : Program(program)
+    , NextOffset(0)
+{
     SpecOpNames = {{
         {JSR, "JSR"},
         {INT, "INT"},
@@ -115,4 +118,18 @@ std::string TDisasembler::Op(ui16 instruction, iterator& it) const {
     const std::string a = ValueA(instruction, it);
     const std::string b = ValueB(instruction, it);
     return OpNames.at(opcode) + " " + b + ", " + a;
+}
+
+void TDisasembler::Process() {
+    iterator begin = Program.begin();
+    for (iterator it = Program.begin(), end = Program.end(); it != end;) {
+        iterator opBegin = it;
+        ui16 v = *it++;
+        AsmProgram.emplace_back(Hex(static_cast<ui16>(opBegin - begin)), Op(v, it));
+    }
+}
+
+void TDisasembler::Save(std::ostream* out) {
+    for (const auto it : AsmProgram)
+        *out << it.Number << " : " << it.Asm << std::endl;
 }
