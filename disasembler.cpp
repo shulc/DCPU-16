@@ -7,6 +7,7 @@ using namespace NDCPU;
 TDisasembler::TDisasembler(const procVec& program)
     : Program(program)
     , NextOffset(0)
+    , NextLabel(0)
 {
     SpecOpNames = {{
         {JSR, "JSR"},
@@ -112,16 +113,30 @@ std::string TDisasembler::Op(ui16 instruction, iterator& it) {
     const ui16 opcode = instruction & 0x1F;
     if (!opcode) {
         const ui16 specOpcode = (instruction >> 5) & 0x1F;
-        const std::string a = ValueA(instruction, it);
+        std::string a = ValueA(instruction, it);
+        if (specOpcode == JSR)
+            a = SetLabel(a);
         return SpecOpNames.at(specOpcode) + " " +  a;
     }
-    const std::string a = ValueA(instruction, it);
+    std::string a = ValueA(instruction, it);
     const std::string b = ValueB(instruction, it);
     if (opcode >= IFN && opcode <= IFU)
         ++NextOffset;
     else
         NextOffset = 0;
+    if (opcode == SET && b == "PC" && a.substr(0, 2) == "0x")
+        a = SetLabel(a);
     return OpNames.at(opcode) + " " + b + ", " + a;
+}
+
+std::string TDisasembler::SetLabel(const std::string& offset) {
+    const auto it = Labels.find(offset);
+    if (it == Labels.end()) {
+        std::stringstream out;
+        out << "label" << ++NextLabel;
+        return Labels.emplace(offset, out.str()).first->second;
+    }
+    return it->second;
 }
 
 void TDisasembler::Process() {
@@ -136,7 +151,10 @@ void TDisasembler::Process() {
 
 void TDisasembler::Save(std::ostream* out) {
     for (const auto it : AsmProgram) {
-        *out << it.Number << " : ";
+        auto labelIt = Labels.find(it.Number);
+        if (labelIt != Labels.end())
+            *out << labelIt->second << ":";
+        //*out << it.Number << " : ";
         for (size_t i = 0; i < it.Offset; ++i)
             *out << "  ";
         *out << it.Asm << std::endl;
