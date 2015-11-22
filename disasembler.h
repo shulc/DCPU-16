@@ -31,7 +31,7 @@ class TDisasembler {
     std::string Value(ui16 v, iterator& it, bool isA) const;
     std::string ValueA(ui16 v, iterator& it) const;
     std::string ValueB(ui16 v, iterator& it) const;
-    std::string Op(ui16 v, iterator& it) const;
+    std::string Op(ui16 v, iterator& it);
     size_t NextOffset;
 
 public:

@@ -108,7 +108,7 @@ std::string TDisasembler::Value(ui16 v, iterator& it, bool isA) const {
     return "";
 }
 
-std::string TDisasembler::Op(ui16 instruction, iterator& it) const {
+std::string TDisasembler::Op(ui16 instruction, iterator& it) {
     const ui16 opcode = instruction & 0x1F;
     if (!opcode) {
         const ui16 specOpcode = (instruction >> 5) & 0x1F;
@@ -117,6 +117,10 @@ std::string TDisasembler::Op(ui16 instruction, iterator& it) const {
     }
     const std::string a = ValueA(instruction, it);
     const std::string b = ValueB(instruction, it);
+    if (opcode >= IFN && opcode <= IFU)
+        ++NextOffset;
+    else
+        NextOffset = 0;
     return OpNames.at(opcode) + " " + b + ", " + a;
 }
 
@@ -125,11 +129,16 @@ void TDisasembler::Process() {
     for (iterator it = Program.begin(), end = Program.end(); it != end;) {
         iterator opBegin = it;
         ui16 v = *it++;
-        AsmProgram.emplace_back(Hex(static_cast<ui16>(opBegin - begin)), Op(v, it));
+        size_t currentOffset = NextOffset;
+        AsmProgram.emplace_back(Hex(static_cast<ui16>(opBegin - begin)), Op(v, it), currentOffset);
     }
 }
 
 void TDisasembler::Save(std::ostream* out) {
-    for (const auto it : AsmProgram)
-        *out << it.Number << " : " << it.Asm << std::endl;
+    for (const auto it : AsmProgram) {
+        *out << it.Number << " : ";
+        for (size_t i = 0; i < it.Offset; ++i)
+            *out << "  ";
+        *out << it.Asm << std::endl;
+    }
 }
