@@ -56,11 +56,13 @@ std::string Memory(const std::string& name) {
     return std::string("[") + name + "]";
 }
 
-std::string Hex(ui16 value) {
+std::string Hex(ui16 value, bool hasPrefix = true) {
     std::stringstream out;
     out.setf(std::ios_base::hex, std::ios_base::basefield);
     out.fill('0');
-    out << "0x" << std::setw(4) << value;
+    if (hasPrefix)
+        out << "0x";
+    out << std::setw(4) << value;
     return out.str();
 }
 
@@ -145,18 +147,36 @@ void TDisasembler::Process() {
         iterator opBegin = it;
         ui16 v = *it++;
         size_t currentOffset = NextOffset;
-        AsmProgram.emplace_back(Hex(static_cast<ui16>(opBegin - begin)), Op(v, it), currentOffset);
+        AsmProgram.emplace_back(
+                Hex(static_cast<ui16>(opBegin - begin)),
+                Op(v, it),
+                opBegin, it,
+                currentOffset
+                );
     }
 }
 
 void TDisasembler::Save(std::ostream* out) {
     for (const auto it : AsmProgram) {
         auto labelIt = Labels.find(it.Number);
-        if (labelIt != Labels.end())
-            *out << labelIt->second << ":";
+        *out << std::left << std::setw(10);
+        if (labelIt != Labels.end()) {
+            *out << labelIt->second  + ":";
+        } else {
+            *out << " ";
+        }
         //*out << it.Number << " : ";
+        std::string offset;
         for (size_t i = 0; i < it.Offset; ++i)
-            *out << "  ";
-        *out << it.Asm << std::endl;
+            offset += "  ";
+
+        *out << std::left
+            << std::setw(30)
+            << offset + it.Asm
+            << ";";
+
+        for (const auto i : it.Instructions)
+            *out << " " << Hex(i, false);
+        *out << std::endl;
     }
 }

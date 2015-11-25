@@ -10,14 +10,16 @@ class TDisasembler {
     using iterator = procVec::const_iterator;
 
     struct TAsmLine {
-        TAsmLine(const std::string& number, const std::string& a, size_t offset = 0)
+        TAsmLine(const std::string& number, const std::string& a, iterator& b, iterator& e, size_t offset = 0)
             : Number(number)
             , Asm(a)
+            , Instructions(b, e)
             , Offset(offset) {
         }
 
         std::string Number;
         std::string Asm;
+        procVec Instructions;
         size_t Offset;
     };
 
