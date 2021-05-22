@@ -1,14 +1,21 @@
 #pragma once
 
 #include "misc.h"
+
 #include <string>
 #include <vector>
 #include <unordered_map>
 
 class TDisasembler {
+public:
     using procVec = std::vector<ui16>;
     using iterator = procVec::const_iterator;
 
+    explicit TDisasembler(const procVec& program);
+    void Process();
+    void Save(std::ostream* out);
+
+private:
     struct TAsmLine {
         TAsmLine(const std::string& number, const std::string& a, iterator& b, iterator& e, size_t offset = 0)
             : Number(number)
@@ -36,11 +43,7 @@ class TDisasembler {
     std::string ValueA(ui16 v, iterator& it) const;
     std::string ValueB(ui16 v, iterator& it) const;
     std::string Op(ui16 v, iterator& it);
+
     size_t NextOffset;
     size_t NextLabel;
-
-public:
-    TDisasembler(const procVec& program);
-    void Process();
-    void Save(std::ostream* out);
 };

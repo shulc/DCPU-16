@@ -1,9 +1,11 @@
 #include "emulator.h"
 #include "disasembler.h"
+#include "asembler.h"
 #include "view.h"
 
-#include <vector>
+#include <fstream>
 #include <iostream>
+#include <vector>
 
 int main(int, char*[]) {
     std::vector<ui16> program {{
@@ -13,11 +15,16 @@ int main(int, char*[]) {
         0x6381, 0xeb81
     }};
 
+
+    /*
+    auto in = std::make_unique<std::ifstream>("basic.dasm16");
+    TAsembler asember(in.get());
+    asember.Save(&std::cout);
+    */
     TDisasembler disasm(program);
     disasm.Process();
     disasm.Save(&std::cout);
 
-#if 0
     NDCPU::TEmulator emulator(program);
     NDCPU::TDebugViewer view(&emulator);
 
@@ -28,7 +35,6 @@ int main(int, char*[]) {
         emulator.Step();
         view.Dump();
     }
-#endif
 
     return 0;
 }

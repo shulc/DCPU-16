@@ -1,7 +1,7 @@
 CC=clang++
-CFLAGS=-c -Wall -std=c++11 -g
+CFLAGS=-c -Wall -std=c++17 -g
 LDFLAGS=
-SOURCES=main.cpp view.cpp emulator.cpp disasembler.cpp
+SOURCES=main.cpp view.cpp emulator.cpp disasembler.cpp asembler.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTEBLE=dcpu16
 

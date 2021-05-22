@@ -2,53 +2,51 @@
 #include <sstream>
 #include <iomanip>
 
-using namespace NDCPU;
-
 TDisasembler::TDisasembler(const procVec& program)
     : Program(program)
     , NextOffset(0)
     , NextLabel(0)
 {
     SpecOpNames = {{
-        {JSR, "JSR"},
-        {INT, "INT"},
-        {IAG, "IAG"},
-        {IAS, "IAS"},
-        {RFI, "RFI"},
-        {IAQ, "IAQ"},
-        {HWN, "HWN"},
-        {HWQ, "HWQ"},
-        {HWI, "HWI"},
+        {NDCPU::JSR, "JSR"},
+        {NDCPU::INT, "INT"},
+        {NDCPU::IAG, "IAG"},
+        {NDCPU::IAS, "IAS"},
+        {NDCPU::RFI, "RFI"},
+        {NDCPU::IAQ, "IAQ"},
+        {NDCPU::HWN, "HWN"},
+        {NDCPU::HWQ, "HWQ"},
+        {NDCPU::HWI, "HWI"},
     }};
 
     OpNames = {{
-        {SET, "SET"},
-        {ADD, "ADD"},
-        {SUB, "SUB"},
-        {MUL, "MUL"},
-        {MLI, "MLI"},
-        {DIV, "DIV"},
-        {DVI, "DVI"},
-        {MOD, "MOD"},
-        {MDI, "MDI"},
-        {AND, "AND"},
-        {BOR, "BOR"},
-        {XOR, "XOR"},
-        {SHR, "SHR"},
-        {ASR, "ASR"},
-        {SHL, "SHL"},
-        {IFB, "IFB"},
-        {IFC, "IFC"},
-        {IFE, "IFE"},
-        {IFN, "IFN"},
-        {IFG, "IFG"},
-        {IFA, "IFA"},
-        {IFL, "IFL"},
-        {IFU, "IFU"},
-        {ADX, "ADX"},
-        {SBX, "SBX"},
-        {STI, "STI"},
-        {STD, "STD"}
+        {NDCPU::SET, "SET"},
+        {NDCPU::ADD, "ADD"},
+        {NDCPU::SUB, "SUB"},
+        {NDCPU::MUL, "MUL"},
+        {NDCPU::MLI, "MLI"},
+        {NDCPU::DIV, "DIV"},
+        {NDCPU::DVI, "DVI"},
+        {NDCPU::MOD, "MOD"},
+        {NDCPU::MDI, "MDI"},
+        {NDCPU::AND, "AND"},
+        {NDCPU::BOR, "BOR"},
+        {NDCPU::XOR, "XOR"},
+        {NDCPU::SHR, "SHR"},
+        {NDCPU::ASR, "ASR"},
+        {NDCPU::SHL, "SHL"},
+        {NDCPU::IFB, "IFB"},
+        {NDCPU::IFC, "IFC"},
+        {NDCPU::IFE, "IFE"},
+        {NDCPU::IFN, "IFN"},
+        {NDCPU::IFG, "IFG"},
+        {NDCPU::IFA, "IFA"},
+        {NDCPU::IFL, "IFL"},
+        {NDCPU::IFU, "IFU"},
+        {NDCPU::ADX, "ADX"},
+        {NDCPU::SBX, "SBX"},
+        {NDCPU::STI, "STI"},
+        {NDCPU::STD, "STD"}
     }};
 }
 
@@ -82,11 +80,11 @@ std::string TDisasembler::ValueB(ui16 v, iterator& it) const {
 
 std::string TDisasembler::Value(ui16 v, iterator& it, bool isA) const {
     if (v <= 0x07) {
-        return RegisterNames[v];
+        return NDCPU::RegisterNames[v];
     } else if (v <= 0x0f) {
-        return Memory(RegisterNames[v - 0x08]);
+        return Memory(NDCPU::RegisterNames[v - 0x08]);
     } else if (v <= 0x17) {
-        return Memory(RegisterNames[v - 0x10] + " + " + Hex(*it++));
+        return Memory(NDCPU::RegisterNames[v - 0x10] + " + " + Hex(*it++));
     } else if (v == 0x18) {
         return isA ? "POP" : "PUSH";
     } else if (v == 0x19) {
@@ -116,17 +114,17 @@ std::string TDisasembler::Op(ui16 instruction, iterator& it) {
     if (!opcode) {
         const ui16 specOpcode = (instruction >> 5) & 0x1F;
         std::string a = ValueA(instruction, it);
-        if (specOpcode == JSR)
+        if (specOpcode == NDCPU::JSR)
             a = SetLabel(a);
         return SpecOpNames.at(specOpcode) + " " +  a;
     }
     std::string a = ValueA(instruction, it);
     const std::string b = ValueB(instruction, it);
-    if (opcode >= IFN && opcode <= IFU)
+    if (opcode >= NDCPU::IFN && opcode <= NDCPU::IFU)
         ++NextOffset;
     else
         NextOffset = 0;
-    if (opcode == SET && b == "PC" && a.substr(0, 2) == "0x")
+    if (opcode == NDCPU::SET && b == "PC" && a.substr(0, 2) == "0x")
         a = SetLabel(a);
     return OpNames.at(opcode) + " " + b + ", " + a;
 }

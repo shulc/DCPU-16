@@ -1,6 +1,6 @@
 #include "emulator.h"
 
-using namespace NDCPU;
+namespace NDCPU {
 
 TEmulator::TEmulator()
     : Memory(0x10000)
@@ -148,3 +148,5 @@ ui16 TEmulator::FromLiteral(ui16 v) const {
 void TEmulator::Step() {
     Op(Memory[PC++]);
 }
+
+} // namespace NDCPU
