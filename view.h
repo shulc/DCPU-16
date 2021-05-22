@@ -17,4 +17,5 @@ public:
     TDebugViewer(const TEmulator* emulator);
     void Dump() const;
 };
-};
+
+} // namespace NDCPU

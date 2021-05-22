@@ -4,7 +4,7 @@
 #include <iostream>
 #include <iomanip>
 
-using namespace NDCPU;
+namespace NDCPU {
 
 TDebugViewer::TDebugViewer(const TEmulator* emulator)
     : Emulator(emulator)
@@ -39,3 +39,5 @@ void TDebugViewer::Dump() const {
             std::cout << std::endl;
     }
 }
+
+} // namespace NDCPU
